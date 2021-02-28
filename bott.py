@@ -1,24 +1,24 @@
 import discord
 import time
+from discord.ext import commands,tasks
 
-client = discord.Client()
+bot = commands.Bot(command_prefix='$')
+water_id = 815637250527592491
 
-@client.event
+@tasks.loop(hours=1.0)
+async def water():
+    chann = bot.get_channel(water_id)
+    await chann.send("drink water!!!")
+    
+@bot.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
-
-@client.event
-async def auto_fish(message):
-    if message.content.startswith('.f'):
-        time.sleep(4680)
-        await message.channel.send('.f')
-'''
-@client.event
-async def react_to(message):
-    if messsage.author == 'Big Tuna#3562":
-        await message.add_reaction('')
-'''
+    print('logged in as {0.user}'.format(bot))
+    water.start()
+@bot.command()
+async def test(ctx):
+    await ctx.send('hi')
+    
   
 
-client.run('ODE1MzI2ODk3NzAxMTI2MTg0.YDqyWA.981jNBre2JTDZ19h0RcHLJuflq4')
+bot.run('ODE1MzI2ODk3NzAxMTI2MTg0.YDqyWA.981jNBre2JTDZ19h0RcHLJuflq4',bot=True)
 
