@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands,tasks
 
+token = str(open('tok.txt').read())
 
 bot = commands.Bot(command_prefix='.', help_command = None)
 water_id = 815637250527592491
@@ -23,5 +24,5 @@ async def test(ctx):
 async def ping(ctx):
     await ctx.send(f'Pong! {round(bot.latency,2)}ms.')
 
-bot.run('ODE1MzI2ODk3NzAxMTI2MTg0.YDqyWA.981jNBre2JTDZ19h0RcHLJuflq4',bot=True)
+bot.run(token,bot=True)
 
