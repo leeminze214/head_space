@@ -1,10 +1,9 @@
-from discord.ext import commands
-
-class Routine_and_Reminders(commands.Cog)
+from discord.ext import commands,tasks
+class Routine_and_Reminders(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
 
-    @task.loop(seconds=3)
+    @tasks.loop(seconds=3)
     async def reminders():
         pass
     
@@ -38,12 +37,11 @@ class Routine_and_Reminders(commands.Cog)
     
     @commands.command()
     async def t(self,ctx):
-        await ctx.
+        await ctx.send("randr workeed")
     
    
 
 
-def setup():
-    bot.add_cog(basic(bot))
+
 def setup(bot):
     bot.add_cog(Routine_and_Reminders(bot))
