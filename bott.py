@@ -5,7 +5,7 @@ import datetime as dt
 token = str(open('tok.txt').read())
 bot = commands.Bot(command_prefix='.', help_command = None)
 
-initial_extensions = ["cogs.cog_ex","cogs.basics","cogs.data","cogs.r_and_r","cogs.other"]
+initial_extensions = ["cogs.basics","cogs.data","cogs.r_and_r","cogs.other"]
 
 if __name__ == '__main__':
     for extension in initial_extensions:
