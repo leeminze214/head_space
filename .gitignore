@@ -4,3 +4,4 @@ tasks.txt
 db.ini
 __pycache__/
 ssl/
+db_auth.json
