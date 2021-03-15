@@ -12,10 +12,6 @@ class methods:
         self.username = config['user']
         self.pw = config['password']
         self.db = config['database']
-        self.sslmode = config['sslmode']
-        self.sslrootcert = config['sslrootcert']
-        self.sslcert = config['sslcert']
-        self.sslkey = config['sslkey']
         self.conn = None
         
     def connect(self):
@@ -26,10 +22,6 @@ class methods:
                 user=self.username,
                 password=self.pw,
                 database=self.db,
-                sslmode =self.sslmode,
-                sslrootcert=self.sslrootcert,
-                sslcert=self.sslcert,
-                sslkey=self.sslkey
             )
             print('database connected')
 
