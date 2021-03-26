@@ -16,10 +16,8 @@ class basic(commands.Cog):
     async def ping(self,ctx):
         await ctx.send(f'Pong! In {round(self.bot.latency*1000, 2)} ms')
 
-    
     @commands.command(name = 'q')
     async def motivational_quote(self,ctx):
-        
         r = requests.get("https://type.fit/api/quotes")
         res = r.json()
         quote = res[random.randint(0,len(res)-1)]
