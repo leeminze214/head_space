@@ -14,7 +14,7 @@ class basic(commands.Cog):
 
     @commands.command()
     async def ping(self,ctx):
-        await ctx.send(f'Pong! In {round(bot.latency*1000, 2)} ms')
+        await ctx.send(f'Pong! In {round(self.bot.latency*1000, 2)} ms')
 
     
     @commands.command(name = 'q')
@@ -24,11 +24,11 @@ class basic(commands.Cog):
         res = r.json()
         quote = res[random.randint(0,len(res)-1)]
         embed = discord.Embed()
-        embed.title = "Quote"
+        
         if quote["author"] != None:
-            embed.description = f'"*{quote["text"]}*" ---{quote["author"]}'
+           embed.title = f'*"{quote["text"]}"* ---{quote["author"]}'
         else:
-            embed.description = f'"{quote["text"]}"'
+             embed.title = f'*"{quote["text"]}"*'
         await ctx.send(embed=embed)
 
     
