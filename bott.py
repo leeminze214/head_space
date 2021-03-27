@@ -6,7 +6,7 @@ from discord.ext import commands,tasks
 token = str(open('tok.txt').read())
 bot = commands.Bot(command_prefix='.', help_command = None)
 
-initial_extensions = ["cogs.basics","cogs.user_data","cogs.daily_routines"]
+initial_extensions = ["cogs.basics","cogs.user_data","cogs.daily_routines","cogs.addictions"]
 
 if __name__ == '__main__':
     for extension in initial_extensions:

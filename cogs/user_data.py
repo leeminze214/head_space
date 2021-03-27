@@ -19,7 +19,24 @@ class data(commands.Cog):
         if res:
             await ctx.send(f"{ctx.author.mention}, your account has been created!")
         else:
-            await ctx.send("You already have an account!")
+            await ctx.send(f"{ctx.author.mention}, you already have an account!")
+
+
+
+
+    @commands.command(name = 'stats')
+    async def user_stats(self,ctx, topic = ''):
+        # general or specific stats for a user'
+        pass
+
+'''
+    @commands.command(name = 'leader')
+    async def leaderboard(self,ctx, topic = ''):
+        # leaderboard on a specific "topic"
+        # included in routines
+        pass
+
+
 
     @commands.command(name = 'survey')
     async def survey(self,ctx):
@@ -31,25 +48,7 @@ class data(commands.Cog):
     async def chart(self,ctx):
         # chart of the data from survey
         pass
-
-    @commands.command(name = 'stats')
-    async def stats(self,ctx, topic = ''):
-        # stats for a specific 'topics'
-        pass
-
-    @commands.command(name = 'profile')
-    async def user_profile(self,ctx):
-        # overall user profile
-        pass
-
-    @commands.command(name = 'leader')
-    async def leaderboard(self,ctx, topic = ''):
-        # leaderboard on a specific "topic"
-        # included in routines
-        pass
-
-
-
+'''
 
 def setup(bot):
     bot.add_cog(data(bot))
