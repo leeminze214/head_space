@@ -29,7 +29,8 @@ class basic(commands.Cog):
              embed.title = f'*"{quote["text"]}"*'
         await ctx.send(embed=embed)
 
-    
+
+
         
 
 # @commands.command(name = 'res')
