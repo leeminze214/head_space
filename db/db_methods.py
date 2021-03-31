@@ -35,11 +35,8 @@ class methods:
         '''
         self.connect()
         cur = self.conn.cursor()
-        cur.execute(
-                    f'''
-                        SELECT EXISTS(SELECT 1 FROM user_info WHERE id='{user_id}') 
-                    '''
-        )
+        query = f'SELECT EXISTS(SELECT 1 FROM user_info WHERE id=\'{user_id}\') '
+        cur.execute(query)
         res = cur.fetchone()[0]
         cur.close()
         print(f'{user_id} in DB: {res}')
@@ -53,12 +50,11 @@ class methods:
         is_user = self.is_user(user_id)
         if not is_user:
             cur = self.conn.cursor()
-            cur.execute(
-                        f'''
+            query =f'''
                             INSERT INTO user_info(id)
                             VALUES('{user_id}')
                         '''
-            )
+            cur.execute(queury)
             self.conn.commit()
             cur.close()
             print(f"{user_id} account has been initialized")

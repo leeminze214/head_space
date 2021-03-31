@@ -11,6 +11,7 @@ class data(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
 
+    
     @commands.command()
     async def init(self,ctx):
         #initialize user account
@@ -27,9 +28,15 @@ class data(commands.Cog):
     @commands.command(name = 'stats')
     async def user_stats(self,ctx, topic = ''):
         # general or specific stats for a user'
+        user = cur.is_user()
+        if not user:
+            await ctx.send("You don't have an account yet, `.init` to create one!")
+            return None
+
         pass
 
 '''
+    @commands.guild_only()
     @commands.command(name = 'leader')
     async def leaderboard(self,ctx, topic = ''):
         # leaderboard on a specific "topic"
