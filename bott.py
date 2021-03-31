@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands,tasks
 
 
-
 token = str(open('tok.txt').read())
 bot = commands.Bot(command_prefix='.', help_command = None)
 

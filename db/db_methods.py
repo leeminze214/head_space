@@ -2,6 +2,7 @@ import psycopg2
 import json
 from datetime import datetime
 
+
 def config():
     with open('db/db_auth.json', 'r') as config:
         params = json.load(config)
@@ -39,7 +40,7 @@ class methods:
         cur.execute(query)
         res = cur.fetchone()[0]
         cur.close()
-        print(f'{user_id} in DB: {res}')
+        #print(f'{user_id} in DB: {res}')
         return res
 
 
@@ -54,17 +55,14 @@ class methods:
                             INSERT INTO user_info(id)
                             VALUES('{user_id}')
                         '''
-            cur.execute(queury)
+            cur.execute(query)
             self.conn.commit()
             cur.close()
-            print(f"{user_id} account has been initialized")
+            #print(f"{user_id} account has been initialized")
             return True
-        print(f"{user_id} already has an account")
+        #print(f"{user_id} already has an account")
         return False
 
     
 
-    
-params = config()
-test = methods(params)
-test.connect()
+

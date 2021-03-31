@@ -2,35 +2,39 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from db import db_methods
-from decorators import decorrs as dec
+from my_decors.is_user_decor import is_user
 
 params = db_methods.config()
 cur = db_methods.methods(params)
 
 class addictions(commands.Cog):
 
-    @dec.is_user(addictions)
     @commands.command(aliases=['a','addiction'])
+    @is_user
     async def addictions(self,ctx):
-        print('after')
+        await ctx.send('here are all the addictions')
         #Lists all possible addictions
-        pass
+        
 
     @commands.command()
+    @is_user
     async def user_addictions(self,ctx):
         #Lists user addictions
         pass
 
     @commands.command()
+    @is_user
     async def add_addictions(self,ctx):
 
         pass
 
     @commands.command()
+    @is_user
     async def remove_addiction(self,ctx, addiction = ""):
         pass
 
     @commands.command()
+    @is_user
     async def reset_addictions(self,ctx, addiction =""):
         pass
 
