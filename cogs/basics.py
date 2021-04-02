@@ -2,6 +2,9 @@ from discord.ext import commands
 import discord
 import requests
 import random
+
+
+
 class basic(commands.Cog):
 
     def __init__(self,bot):
@@ -10,6 +13,7 @@ class basic(commands.Cog):
     @commands.command()
     async def help(self,ctx):
         embed = discord.Embed()
+        embed.title = "help command"
         await ctx.send(embed = embed)
 
     @commands.command()
@@ -37,11 +41,8 @@ class basic(commands.Cog):
 # async def resources_for(self,ctx, topic):
 #     pass
 
-
-# @commands.command(name = 'cute')
-# async def cute_pictures(self,ctx):
-#     pass
     
+
 
 def setup(bot):
     bot.add_cog(basic(bot))

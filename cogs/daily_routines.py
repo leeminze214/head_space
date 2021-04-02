@@ -1,5 +1,5 @@
 from discord.ext import commands,tasks
-from my_decors.is_user_decor import is_user
+from custom.decors import is_user
 
 class Routine_and_Reminders(commands.Cog):
     def __init__(self,bot):
@@ -46,3 +46,17 @@ class Routine_and_Reminders(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Routine_and_Reminders(bot))
+
+    '''
+    import datetime
+
+a = '2014-05-06 12:00:56'
+b = '2013-03-06 16:08:22'
+
+start = datetime.datetime.strptime(a, '%Y-%m-%d %H:%M:%S')
+ends = datetime.datetime.strptime(b, '%Y-%m-%d %H:%M:%S')
+
+diff = start - ends
+
+hours = int(diff.seconds // (60 * 60))
+mins = int((diff.seconds // 60) % 60)'''

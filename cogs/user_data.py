@@ -1,10 +1,7 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
-from db import db_methods
-
-params = db_methods.config()
-cur = db_methods.methods(params)
+from db.methods import execute as ex
 
 class data(commands.Cog):
 
@@ -16,7 +13,7 @@ class data(commands.Cog):
     async def init(self,ctx):
         #initialize user account
         user_id = ctx.author.id
-        res = cur.initialize(user_id)
+        res = ex.initialize(user_id)
         if res:
             await ctx.send(f"{ctx.author.mention}, your account has been created!")
         else:
@@ -28,7 +25,7 @@ class data(commands.Cog):
     @commands.command(name = 'stats')
     async def user_stats(self,ctx, topic = ''):
         # general or specific stats for a user'
-        user = cur.is_user()
+        user = ex.is_user()
         if not user:
             await ctx.send("You don't have an account yet, `.init` to create one!")
             return None
@@ -38,7 +35,10 @@ class data(commands.Cog):
 '''
     @commands.guild_only()
     @commands.command(name = 'leader')
-    async def leaderboard(self,ctx, topic = ''):
+    async def leaderboard(self,ctx, to
+    
+    
+    ic = ''):
         # leaderboard on a specific "topic"
         # included in routines
         pass
