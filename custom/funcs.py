@@ -4,10 +4,14 @@
 #         num +=1
 #         value += f'{num}. [{j}]({it[j]})\n'
 #     return value
+from custom.refers import time_names
 
-def embed_list(emb,it):
+def embed_time(emb,time_list):
+    for i in range(4):
+        emb.add_field(name= f'{time_names[i]}',value = f'{time_list[i]}')
+
+def string_time(emb,time_list):
     value = ''
-    for i in it:
-        emb.add_field()
-        value += f'{i}'
+    for i in range(4):
+        value+= f'{time_names[i]}: {time_list[i]}\n'
     return value
