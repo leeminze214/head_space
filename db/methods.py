@@ -52,7 +52,6 @@ class methods:
         cur = self.conn.cursor()
         if type(query) == list:
             for q in query:
-
                 cur.execute(q)
         else:
             cur.execute(query)
@@ -103,22 +102,7 @@ class methods:
 
 
 #------------------------addictions------------------------------#
-
-    def all_addictions(self):
-            '''
-                fetches all addictions names
-                 from db
-            '''
-
-            query ='''
-                        SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
-                            WHERE TABLE_NAME = 'user_addictions';
-                    '''
-            res = self.basic_fetch(query,'all')[1::2]
-            return res
-    
-
-
+##
     def count_users_addicted(self, addiction):
         '''
             fetches number of users with
@@ -133,7 +117,7 @@ class methods:
         return res
     
 
-
+##
     def add_addiction(self, user_id, addiction):
         '''
             inserts addiction into user 
@@ -141,9 +125,7 @@ class methods:
         '''
 
         time_now = dt.datetime.now()
-
         res = self.fetch_addiction(user_id,addiction)
-        
         if res is None:
             update_query = f'''
                             UPDATE user_addictions
@@ -151,30 +133,32 @@ class methods:
                                     WHERE id = {user_id};
                             '''
             self.basic_commit(update_query)
-        else: 
-            #already have addiction
-            return False
+            return True
+        #already has addiction
+        return False
            
 
-
+##
     def fetch_addiction(self,user_id,addiction):
         '''
             fetches specific addiction start time
+            return format is '%Y-%m-%d %H:%M:%S.%f'
         '''
 
         query = f'''
                     SELECT {addiction} FROM user_addictions
                         WHERE id = {user_id};
                 '''
-        start = self.basic_fetch(query, 'one')[0]
-        return start
+        res = self.basic_fetch(query, 'one')[0]
+        return res
 
 
 
-    def convert_str_time(self,str_time):
+    def convert_str_time_to_datetime(self,str_time):
         '''
-            when time in string is fetched out of db
-             use this to convert to datetime
+            converts time in string to datetime object
+            return format '%Y-%m-%d %H:%M:%S.%f'
+
         '''
 
         time_format = '%Y-%m-%d %H:%M:%S.%f'
@@ -182,36 +166,26 @@ class methods:
         return time
 
 
-
+##
     def fetch_user_addictions(self,user_id):
         '''
             fetches user's current addictions
+            returns [ [addiction1, [d,h,m,s]], [addiction2, [d,h,m,s]].. ]
         '''
-        ###works when only one addictions being returned from query############################################
-        ###one result = ('x',)
-        ###more = ("('x'),",)
+
         valid = ''
         for i in valid_addictions:
-            valid +=f"{i}, "
-        print(valid)
+            valid +=f'{i}, '
         query = f'''
                     SELECT {valid[:-2]} FROM user_addictions
                         WHERE id = {user_id};
                 '''
-        ###goal: addiction_start_times = [timeres1,timeres2,timeres3]
         addiction_start_times = self.basic_fetch(query,'one')
-        print(addiction_start_times)
-        end = dt.datetime.now()
         addiction_and_delta_times = []
         for time in zip(valid_addictions,addiction_start_times):
-            try:
-                ###rn is it trying to convert something thats not a valid time
-                
-                deltatime = end-self.convert_str_time(time[1])
+            if time[1] is not None:
+                deltatime = self.addiction_results(user_id,start_date = time[1])
                 addiction_and_delta_times.append([time[0],self.convert_dt_to_list(deltatime)])
-            except:
-                #time is null, meaning user does not have this addiction
-                pass
         return addiction_and_delta_times
 
 
@@ -233,19 +207,17 @@ class methods:
 
 
 
-
+##
     def remove_addiction(self,user_id,addiction):
         '''
             remove addiction from user account
+            returns datetime list by self.convert_dt_to_list(date)
+            or False
         '''
-
-        end = dt.datetime.now()
-        start = self.fetch_addiction(user_id,addiction)
-        if start is not None:
-            start = self.convert_str_time(start)
-            diff = end - start
-            rep_time = diff.total_seconds()
+        diff = self.addiction_results(user_id,addiction)
+        if bool(diff):
             #diff format: x days, h:m:s.f
+            rep_time = diff.total_seconds()
             all_values = self.convert_dt_to_list(diff)
             query = f'''
                         UPDATE user_addictions 
@@ -254,10 +226,22 @@ class methods:
                     '''
             self.basic_commit(query)
             return all_values
+        return False
+
+
+
+    def addiction_results(self,user_id,addiction,start_date = False):
+        end = dt.datetime.now()
+        start = None
+        if bool(start_date):
+            start = start_date
         else:
-            return False
+            start = self.fetch_addiction(user_id,addiction) 
 
-
+        if start is not None:
+            start = self.convert_str_time_to_datetime(start)
+            return end-start
+        return False
 
 
 
