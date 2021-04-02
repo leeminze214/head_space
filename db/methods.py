@@ -214,7 +214,7 @@ class methods:
             returns datetime list by self.convert_dt_to_list(date)
             or False
         '''
-        diff = self.addiction_results(user_id,addiction)
+        diff = self.addiction_results(user_id,addiction=addiction)
         if bool(diff):
             #diff format: x days, h:m:s.f
             rep_time = diff.total_seconds()
@@ -230,7 +230,7 @@ class methods:
 
 
 
-    def addiction_results(self,user_id,addiction,start_date = False):
+    def addiction_results(self,user_id,addiction=False,start_date = False):
         end = dt.datetime.now()
         start = None
         if bool(start_date):
