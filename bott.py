@@ -3,7 +3,7 @@ from discord.ext import commands,tasks
 
 
 token = str(open('tok.txt').read())
-bot = commands.Bot(command_prefix='.', help_command = None)
+bot = commands.Bot(command_prefix='.', case_insensitive=True,help_command = None)
 
 initial_extensions = ["cogs.basics","cogs.user_data","cogs.daily_routines","cogs.addictions"]#,"cogs.misc"]
 
