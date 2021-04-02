@@ -190,12 +190,17 @@ class methods:
         ###works when only one addictions being returned from query############################################
         ###one result = ('x',)
         ###more = ("('x'),",)
+        valid = ''
+        for i in valid_addictions:
+            valid +=f"{i}, "
+        print(valid)
         query = f'''
-                    SELECT ({str(valid_addictions)[2:-2]}) FROM user_addictions
+                    SELECT {valid[:-2]} FROM user_addictions
                         WHERE id = {user_id};
                 '''
         ###goal: addiction_start_times = [timeres1,timeres2,timeres3]
         addiction_start_times = self.basic_fetch(query,'one')
+        print(addiction_start_times)
         end = dt.datetime.now()
         addiction_and_delta_times = []
         for time in zip(valid_addictions,addiction_start_times):

@@ -32,7 +32,6 @@ class addictions(commands.Cog):
     async def user_addictions(self,ctx):
         #Lists user current addictions
         res = ex.fetch_user_addictions(ctx.author.id)
-        print(res)
         #[[x,[x,x,x], [y,[y,y,y]]]
         if not res:
             await ctx.send(f'{ctx.author.mention}, you have no addictions kept in track!')
@@ -40,7 +39,8 @@ class addictions(commands.Cog):
         else:
             embed = discord.Embed()
             embed.title = f'{ctx.author.name}\'s Addictions'
-            embed.add_field(name = res[0][0],value= res[0][1] )
+            for i in range(len(res)):
+                embed.add_field(name = res[i][0],value= res[i][1] )
             await ctx.send(embed=embed)
 
 
@@ -72,7 +72,7 @@ class addictions(commands.Cog):
     async def remove_addiction(self,ctx,addiction =''):
 
         if addiction in valid_addictions:
-            stats = ex.remove_addiction(ctx.author.id,'gaming')
+            stats = ex.remove_addiction(ctx.author.id,addiction)
             if not stats:
                 await ctx.send(f'{ctx.author.mention}, {addiction} is not being keep track of yet!')
             else:
