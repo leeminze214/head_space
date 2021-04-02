@@ -1,7 +1,7 @@
 import psycopg2
 import json
 import datetime as dt
-from custom.valid_addictions import valid_addictions
+from custom.refers import valid_addictions
 
 def config():
     with open('db/db_auth.json', 'r') as config:
@@ -200,6 +200,11 @@ class methods:
         days = 0
         all_values = values[-1].split(':')
         all_values[-1] = all_values[-1][:2]
+        print(all_values)
+        for i in range(1,3):
+            if all_values[i][0] == '0':
+                all_values[i] =  all_values[i][1]
+        print(all_values)
         if len(values)>1:
             days = values[0]
         all_values.insert(0, days)
@@ -218,14 +223,14 @@ class methods:
         if bool(diff):
             #diff format: x days, h:m:s.f
             rep_time = diff.total_seconds()
-            all_values = self.convert_dt_to_list(diff)
+            dt_in_list = self.convert_dt_to_list(diff)
             query = f'''
                         UPDATE user_addictions 
                             SET {'s'+addiction} = array_append({'s'+addiction},{rep_time}), {addiction} = null
                                  WHERE id = {user_id};
                     '''
             self.basic_commit(query)
-            return all_values
+            return dt_in_list
         return False
 
 
