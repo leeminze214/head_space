@@ -10,7 +10,7 @@ from custom.valid_addictions import valid_addictions
 class addictions(commands.Cog):
 
     @commands.command(aliases=['addictions','a'])
-    async def list_all_addictions(self,ctx):
+    async def list_all_addictions(self,ctx,only_list = False):
         '''
             list all addictions and current number 
             of users that have each addiction
@@ -24,8 +24,10 @@ class addictions(commands.Cog):
             number_of_users_addicted = ex.count_users_addicted(addiction)
             format_addiction = addiction[0].upper()+addiction[1:]
             embed.add_field(name = format_addiction, value = number_of_users_addicted, inline=True)
-        if ex.is_user(ctx.author.id):
-            await ctx.invoke(ctx.bot.get_command('add_addictions'), embed_of_addictions=embed)
+        if only_list:
+            return embed
+        elif ex.is_user(ctx.author.id):
+            await ctx.invoke(ctx.bot.get_command('add_addictions'))
         else:
             await ctx.send(embed=embed)
         
@@ -51,17 +53,17 @@ class addictions(commands.Cog):
 
     @commands.command(aliases=['aa','addaddiction','adda'])
     @is_user
-    async def add_addictions(self,ctx,addiction='',embed_of_addictions = False):
-
+    async def add_addictions(self,ctx,addiction=''):
         if addiction in valid_addictions:
             res = ex.add_addiction(ctx.author.id,addiction)
             if res:
                 await ctx.send(f'{ctx.author.mention}, you are now keeping track of {addiction} addiction!')
             else:
                 await ctx.send(f'{ctx.author.mention}, you are already keeping track of {addiction} addiction!')
-                
-        elif not len(addiction) or bool(embed_of_addictions):
-            embed = embed_of_addictions
+
+        
+        elif not len(addiction):
+            embed = await ctx.invoke(ctx.bot.get_command('list_all_addictions'), only_list=True)
             await ctx.send(embed=embed)
         
         else:
