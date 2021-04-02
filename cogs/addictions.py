@@ -33,6 +33,7 @@ class addictions(commands.Cog):
         #Lists user current addictions
         res = ex.fetch_user_addictions(ctx.author.id)
         print(res)
+        #[[x,[x,x,x], [y,[y,y,y]]]
         if not res:
             await ctx.send(f'{ctx.author.mention}, you have no addictions kept in track!')
         
@@ -80,6 +81,7 @@ class addictions(commands.Cog):
                 embed.add_field(name = 'Days', value = stats[0])
                 await ctx.send(f'{ctx.author.mention}, your {addiction} addiction has been removed')
                 await ctx.send(embed = embed)
+                
         elif not len(addiction):
             embed = discord.Embed()
             embed.title = "ALL OF THEM remove"

@@ -141,11 +141,8 @@ class methods:
         '''
 
         time_now = dt.datetime.now()
-        fetch_query = f'''
-                        SELECT {addiction} FROM user_addictions
-                            WHERE id = {user_id};
-                        '''
-        res = self.basic_fetch(fetch_query,'one')[0]
+
+        res = self.fetch_addiction(user_id,addiction)
         
         if res is None:
             update_query = f'''
@@ -155,6 +152,7 @@ class methods:
                             '''
             self.basic_commit(update_query)
         else: 
+            #already have addiction
             return False
            
 
@@ -169,10 +167,7 @@ class methods:
                         WHERE id = {user_id};
                 '''
         start = self.basic_fetch(query, 'one')[0]
-        if start is not None:
-            start = self.convert_str_time(start)
-            return start
-        return False
+        return start
 
 
 
@@ -192,16 +187,21 @@ class methods:
         '''
             fetches user's current addictions
         '''
-
+        ###works when only one addictions being returned from query############################################
+        ###one result = ('x',)
+        ###more = ("('x'),",)
         query = f'''
                     SELECT ({str(valid_addictions)[2:-2]}) FROM user_addictions
                         WHERE id = {user_id};
                 '''
+        ###goal: addiction_start_times = [timeres1,timeres2,timeres3]
         addiction_start_times = self.basic_fetch(query,'one')
         end = dt.datetime.now()
         addiction_and_delta_times = []
         for time in zip(valid_addictions,addiction_start_times):
             try:
+                ###rn is it trying to convert something thats not a valid time
+                
                 deltatime = end-self.convert_str_time(time[1])
                 addiction_and_delta_times.append([time[0],self.convert_dt_to_list(deltatime)])
             except:
@@ -236,11 +236,11 @@ class methods:
 
         end = dt.datetime.now()
         start = self.fetch_addiction(user_id,addiction)
-        
-        if start:
+        if start is not None:
+            start = self.convert_str_time(start)
             diff = end - start
             rep_time = diff.total_seconds()
-            #diff format: 1379 days, 21:18:51.552890
+            #diff format: x days, h:m:s.f
             all_values = self.convert_dt_to_list(diff)
             query = f'''
                         UPDATE user_addictions 
