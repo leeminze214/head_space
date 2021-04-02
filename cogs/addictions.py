@@ -3,7 +3,8 @@ from discord.ext import commands
 from datetime import datetime
 from db.methods import execute as ex
 from custom.decors import is_user
-from custom.valid_addictions import valid_addictions
+from custom.funcs import embed_time,string_time
+from custom.refers import valid_addictions, time_names
 
 
 
@@ -45,8 +46,9 @@ class addictions(commands.Cog):
         else:
             embed = discord.Embed()
             embed.title = f'{ctx.author.name}\'s Addictions'
-            for i in range(len(res)):
-                embed.add_field(name = res[i][0],value= res[i][1] )
+            for i in res:
+                value = string_time(embed,i[1])
+                embed.add_field(name = i[0],value= value)
             await ctx.send(embed=embed)
 
 
@@ -63,6 +65,7 @@ class addictions(commands.Cog):
 
         
         elif not len(addiction):
+            #react to add_addiction specific addiction
             embed = await ctx.invoke(ctx.bot.get_command('list_all_addictions'), only_list=True)
             await ctx.send(embed=embed)
         
@@ -78,16 +81,18 @@ class addictions(commands.Cog):
 
         if addiction in valid_addictions:
             res = ex.remove_addiction(ctx.author.id,addiction)
+            #res is [d,h,m,s]
             if not res:
                 await ctx.send(f'{ctx.author.mention}, {addiction} is not being keep track of yet!')
             else:
                 embed = discord.Embed()
-                embed.title = f'Results'
-                embed.add_field(name = 'Days', value = res[0])
+                embed.title = f'Results for {addiction} addiction'
+                embed_time(embed,res)
                 await ctx.send(f'{ctx.author.mention}, your {addiction} addiction has been removed')
                 await ctx.send(embed = embed)
                 
         elif not len(addiction):
+            #react to remove_addiction specific addiction
             embed = discord.Embed()
             embed.title = "ALL OF THEM remove"
             await ctx.send(embed=embed)
