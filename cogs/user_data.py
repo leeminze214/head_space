@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
-from db.methods import execute as ex
+from apis.user import user
 
 class data(commands.Cog):
 
@@ -13,7 +13,7 @@ class data(commands.Cog):
     async def init(self,ctx):
         #initialize user account
         user_id = ctx.author.id
-        res = ex.initialize(user_id)
+        res = user.initialize(user_id)
         if res:
             await ctx.send(f"{ctx.author.mention}, your account has been created!")
         else:
@@ -25,7 +25,7 @@ class data(commands.Cog):
     @commands.command(name = 'stats')
     async def user_stats(self,ctx, topic = ''):
         # general or specific stats for a user'
-        user = ex.is_user()
+        user = user.is_user()
         if not user:
             await ctx.send("You don't have an account yet, `.init` to create one!")
             return None

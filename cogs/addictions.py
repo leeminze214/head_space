@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
-from db.methods import execute as ex
+from apis.user import user
+from apis.adic import adic
 from custom.decors import is_user
 from custom.funcs import embed_time,string_time
 from custom.refers import valid_addictions, time_names
@@ -22,12 +23,12 @@ class addictions(commands.Cog):
         embed.title = "Addictions"  
         for i in valid_addictions:
             addiction = i
-            number_of_users_addicted = ex.count_users_addicted(addiction)
+            number_of_users_addicted = adic.count_users_addicted(addiction)
             format_addiction = addiction[0].upper()+addiction[1:]
             embed.add_field(name = format_addiction, value = number_of_users_addicted, inline=True)
         if only_list:
             return embed
-        elif ex.is_user(ctx.author.id):
+        elif user.is_user(ctx.author.id):
             await ctx.invoke(ctx.bot.get_command('add_addictions'))
         else:
             await ctx.send(embed=embed)
@@ -38,7 +39,7 @@ class addictions(commands.Cog):
     @is_user
     async def list_user_addictions(self,ctx):
         #Lists user current addictions
-        res = ex.fetch_user_addictions(ctx.author.id)
+        res = adic.fetch_user_addictions(ctx.author.id)
         #[[x,[x,x,x], [y,[y,y,y]]]
         if not res:
             await ctx.send(f'{ctx.author.mention}, you have no addictions kept in track!')
@@ -57,7 +58,7 @@ class addictions(commands.Cog):
     @is_user
     async def add_addictions(self,ctx,addiction=''):
         if addiction in valid_addictions:
-            res = ex.add_addiction(ctx.author.id,addiction)
+            res = adic.add_addiction(ctx.author.id,addiction)
             if res:
                 await ctx.send(f'{ctx.author.mention}, you are now keeping track of {addiction} addiction!')
             else:
@@ -80,7 +81,7 @@ class addictions(commands.Cog):
     async def remove_addiction(self,ctx,addiction =''):
 
         if addiction in valid_addictions:
-            res = ex.remove_addiction(ctx.author.id,addiction)
+            res = adic.remove_addiction(ctx.author.id,addiction)
             #res is [d,h,m,s]
             if not res:
                 await ctx.send(f'{ctx.author.mention}, {addiction} is not being keep track of yet!')
