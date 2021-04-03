@@ -113,21 +113,22 @@ class addictions:
 
 
 ##
-    def remove_addiction(self,user_id,addiction):
-        '''
-            remove addiction from user account
-            returns datetime list by self.convert_dt_to_list(date)
-            or False
-        '''
+    def update_addiction(self,user_id,addiction,action = ''):
 
         diff = self.addiction_time_results(user_id,addiction=addiction)
         if bool(diff):
             #diff format: x days, h:m:s.f
             rep_time = diff.total_seconds()
             dt_in_list = self.convert_dt_to_list(diff)
+            addiction_time_now = None
+            if action == 'remove':
+                addiction_time_now = 'null'
+            elif action == 'reset':
+                time_now = str(dt.datetime.now())
+                addiction_time_now = time_now
             query = f'''
                         UPDATE user_addictions 
-                            SET {'s'+addiction} = array_append({'s'+addiction},{rep_time}), {addiction} = null
+                            SET {'s'+addiction} = array_append({'s'+addiction},{rep_time}), {addiction} = {addiction_time_now}
                                  WHERE id = {user_id};
                     '''
             methods.basic_commit(query)
