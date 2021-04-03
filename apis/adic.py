@@ -100,15 +100,13 @@ class addictions:
 
         values = str(date).split()
         days = 0
+        if len(values)>1:
+            days = values[0]
         all_values = values[-1].split(':')
         all_values[-1] = all_values[-1][:2]
-        print(all_values)
         for i in range(1,3):
             if all_values[i][0] == '0':
                 all_values[i] =  all_values[i][1]
-        print(all_values)
-        if len(values)>1:
-            days = values[0]
         all_values.insert(0, days)
         return all_values
 

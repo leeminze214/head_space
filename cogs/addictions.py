@@ -29,7 +29,7 @@ class addictions(commands.Cog):
         if only_list:
             return embed
         elif user.is_user(ctx.author.id):
-            await ctx.invoke(ctx.bot.get_command('add_addictions'))
+            await ctx.invoke(ctx.bot.get_command('add_addictions'),embed_addic = embed)
         else:
             await ctx.send(embed=embed)
         
@@ -38,12 +38,10 @@ class addictions(commands.Cog):
     @commands.command(aliases=['lista','la','laddictions','listaddictions'])
     @is_user
     async def list_user_addictions(self,ctx):
-        #Lists user current addictions
         res = adic.fetch_user_addictions(ctx.author.id)
         #[[x,[x,x,x], [y,[y,y,y]]]
         if not res:
             await ctx.send(f'{ctx.author.mention}, you have no addictions kept in track!')
-        
         else:
             embed = discord.Embed()
             embed.title = f'{ctx.author.name}\'s Addictions'
@@ -56,20 +54,21 @@ class addictions(commands.Cog):
 
     @commands.command(aliases=['aa','addaddiction','adda'])
     @is_user
-    async def add_addictions(self,ctx,addiction=''):
+    async def add_addictions(self,ctx,addiction='',embed_addic=''):
         if addiction in valid_addictions:
             res = adic.add_addiction(ctx.author.id,addiction)
             if res:
                 await ctx.send(f'{ctx.author.mention}, you are now keeping track of {addiction} addiction!')
             else:
                 await ctx.send(f'{ctx.author.mention}, you are already keeping track of {addiction} addiction!')
-
-        
         elif not len(addiction):
             #react to add_addiction specific addiction
-            embed = await ctx.invoke(ctx.bot.get_command('list_all_addictions'), only_list=True)
+            embed = None
+            if len(embed_addic):
+                embed = embed_addic
+            else:
+                embed = await ctx.invoke(ctx.bot.get_command('list_all_addictions'), only_list=True)
             await ctx.send(embed=embed)
-        
         else:
             await ctx.send(f'{ctx.author.mention}, could not find {addiction} addiction!')
 
@@ -79,7 +78,6 @@ class addictions(commands.Cog):
     @commands.command(aliases=['ra','removea','removeaddiction'])
     @is_user
     async def remove_addiction(self,ctx,addiction =''):
-
         if addiction in valid_addictions:
             res = adic.remove_addiction(ctx.author.id,addiction)
             #res is [d,h,m,s]
@@ -91,13 +89,11 @@ class addictions(commands.Cog):
                 embed_time(embed,res)
                 await ctx.send(f'{ctx.author.mention}, your {addiction} addiction has been removed')
                 await ctx.send(embed = embed)
-                
         elif not len(addiction):
             #react to remove_addiction specific addiction
             embed = discord.Embed()
             embed.title = "ALL OF THEM remove"
             await ctx.send(embed=embed)
-        
         else:
             await ctx.send(f'{ctx.author.mention}, could not find {addiction} addiction!')
 
