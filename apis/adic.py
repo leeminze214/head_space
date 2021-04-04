@@ -116,24 +116,25 @@ class addictions:
     def update_addiction(self,user_id,addiction,action = ''):
 
         diff = self.addiction_time_results(user_id,addiction=addiction)
-        if bool(diff):
-            #diff format: x days, h:m:s.f
-            rep_time = diff.total_seconds()
-            dt_in_list = self.convert_dt_to_list(diff)
-            addiction_time_now = None
-            if action == 'remove':
-                addiction_time_now = 'null'
-            elif action == 'reset':
-                addiction_time_now = str(dt.datetime.now())
-            print(type(addiction_time_now))
-            query = f'''
-                        UPDATE user_addictions 
-                            SET {'s'+addiction} = array_append({'s'+addiction},{rep_time}), {addiction} = '{str(addiction_time_now)}'
-                                 WHERE id = {user_id};
-                    '''
-            methods.basic_commit(query)
-            return dt_in_list
-        return False
+        if not diff:
+            return False
+        
+        #diff format: x days, h:m:s.f
+        rep_time = diff.total_seconds()
+        dt_in_list = self.convert_dt_to_list(diff)
+        addiction_time_now = 'NULL'
+        if action == 'remove':
+            pass
+        elif action == 'reset':
+            addiction_time_now = str(dt.datetime.now())
+        print(type(addiction_time_now))
+        query = f'''
+                    UPDATE user_addictions 
+                        SET {'s'+addiction} = array_append({'s'+addiction},{rep_time}), {addiction} = '{addiction_time_now}'
+                                WHERE id = {user_id};
+                '''
+        methods.basic_commit(query)
+        return dt_in_list
 
 
 
@@ -141,12 +142,14 @@ class addictions:
         '''
             returns time results after user resets or removes addiction
         '''
-
+        ###or not null
         start = self.fetch_addiction(user_id,addiction) 
-        if start is not None:
-            deltatime = self.time_diff_results(user_id, start)
-            return deltatime
-        return False
+        print(start)
+        print(type(start))
+        if start == 'NULL':
+            return False
+        deltatime = self.time_diff_results(user_id, start)
+        return deltatime
 
 
 
