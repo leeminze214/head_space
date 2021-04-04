@@ -130,7 +130,7 @@ class addictions:
         print(type(addiction_time_now))
         query = f'''
                     UPDATE user_addictions 
-                        SET {'s'+addiction} = array_append({'s'+addiction},{rep_time}), {addiction} = '{addiction_time_now}''
+                        SET {'s'+addiction} = array_append({'s'+addiction},{rep_time}), {addiction} = '{addiction_time_now}'
                                 WHERE id = {user_id};
                 '''
         methods.basic_commit(query)
