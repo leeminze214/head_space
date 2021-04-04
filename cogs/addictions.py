@@ -76,7 +76,7 @@ class addictions(commands.Cog):
                 await ctx.send(f'{ctx.author.mention}, {addiction} is not being keep track of yet!')
             else:
                 embed = discord.Embed()
-                embed.title = f'Results for {addiction} addiction'
+                embed.title = f'Results for {addiction} addiction - removed'
                 embed_time(embed,res)
                 await ctx.send(f'{ctx.author.mention}, your {addiction} addiction has been removed')
                 await ctx.send(embed = embed)
@@ -91,10 +91,29 @@ class addictions(commands.Cog):
 
 
 
-    @commands.command()
+    @commands.command(aliases=['reset'])
     @is_user
     async def reset_addictions(self,ctx, addiction =""):
-        pass
+        addiction = addiction.lower()
+        if addiction in valid_addictions:
+            res = adic.update_addiction(ctx.author.id,addiction,action='reset')
+            #res is [d,h,m,s]
+            if not res:
+                await ctx.send(f'{ctx.author.mention}, {addiction} is not being keep track of yet!')
+            else:
+                embed = discord.Embed()
+                embed.title = f'Results for {addiction} addiction - reset'
+                embed_time(embed,res)
+                await ctx.send(f'{ctx.author.mention}, your {addiction} addiction has been reset')
+                await ctx.send(embed = embed)
+        elif not len(addiction):
+            #react to remove_addiction specific addiction
+            embed = discord.Embed()
+            embed.title = "ALL OF THEM reset"
+            #embed_emoji
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(f'{ctx.author.mention}, could not find {addiction} addiction!')
 
 
     def embed_all_addiction(self,embed):
