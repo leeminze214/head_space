@@ -28,7 +28,7 @@ class addictions:
 
         time_now = dt.datetime.now()
         res = self.fetch_addiction(user_id,addiction)
-        if res is None:
+        if res =='NULL':
             update_query = f'''
                             UPDATE user_addictions
                                 SET {addiction} = '{str(time_now)}'
