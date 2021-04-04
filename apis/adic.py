@@ -13,7 +13,7 @@ class addictions:
 
         query = f'''
                     SELECT COUNT({addiction}) FROM user_addictions
-                        WHERE {addiction} <> 'NULL';
+                        WHERE {addiction} <> 'None';
                 '''
         res = methods.basic_fetch(query,'one')[0]
         return res
@@ -28,7 +28,7 @@ class addictions:
 
         time_now = dt.datetime.now()
         res = self.fetch_addiction(user_id,addiction)
-        if res =='NULL':
+        if str(res) =='None':
             update_query = f'''
                             UPDATE user_addictions
                                 SET {addiction} = '{str(time_now)}'
@@ -85,7 +85,7 @@ class addictions:
         addiction_start_times = methods.basic_fetch(query,'one')
         addiction_and_delta_times = []
         for time in zip(valid_addictions,addiction_start_times):
-            if time[1] != 'NULL':
+            if str(time[1]) != 'None':
                 deltatime = self.time_diff_results(user_id,time[1])
                 addiction_and_delta_times.append([time[0],self.convert_dt_to_list(deltatime)])
         return addiction_and_delta_times
@@ -122,7 +122,7 @@ class addictions:
         #diff format: x days, h:m:s.f
         rep_time = diff.total_seconds()
         dt_in_list = self.convert_dt_to_list(diff)
-        addiction_time_now = 'NULL'
+        addiction_time_now = None
         if action == 'remove':
             pass
         elif action == 'reset':
@@ -130,7 +130,7 @@ class addictions:
         print(type(addiction_time_now))
         query = f'''
                     UPDATE user_addictions 
-                        SET {'s'+addiction} = array_append({'s'+addiction},{rep_time}), {addiction} = '{addiction_time_now}'
+                        SET {'s'+addiction} = array_append({'s'+addiction},{rep_time}), {addiction} = '{addiction_time_now}''
                                 WHERE id = {user_id};
                 '''
         methods.basic_commit(query)
@@ -142,11 +142,11 @@ class addictions:
         '''
             returns time results after user resets or removes addiction
         '''
-        ###or not null
+        
         start = self.fetch_addiction(user_id,addiction) 
         print(start)
         print(type(start))
-        if start == 'NULL':
+        if str(start) == 'None':
             return False
         deltatime = self.time_diff_results(user_id, start)
         return deltatime
