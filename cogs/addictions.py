@@ -12,7 +12,7 @@ from custom.refers import valid_addictions, time_names
 class addictions(commands.Cog):
 
     @commands.command(aliases=['addictions','a'])
-    async def list_all_addictions(self,ctx,only_list = False):
+    async def list_all_addictions(self,ctx):
         '''
             list all addictions and current number 
             of users that have each addiction
@@ -21,19 +21,10 @@ class addictions(commands.Cog):
         
         embed = discord.Embed()
         embed.title = "Addictions"  
-        for i in valid_addictions:
-            addiction = i
-            number_of_users_addicted = adic.count_users_addicted(addiction)
-            format_addiction = addiction[0].upper()+addiction[1:]
-            embed.add_field(name = format_addiction, value = number_of_users_addicted, inline=True)
-        if only_list:
-            return embed
-        elif user.is_user(ctx.author.id):
-            await ctx.invoke(ctx.bot.get_command('add_addictions'),embed_addic = embed)
-        else:
-            await ctx.send(embed=embed)
-        
-        
+        addictions_embeded = self.embed_all_addiction(embed)
+        await ctx.send(embed = addictions_embeded)
+
+
 
     @commands.command(aliases=['lista','la','laddictions','listaddictions'])
     @is_user
@@ -54,7 +45,8 @@ class addictions(commands.Cog):
 
     @commands.command(aliases=['aa','addaddiction','adda'])
     @is_user
-    async def add_addictions(self,ctx,addiction='',embed_addic=''):
+    async def add_addictions(self,ctx,addiction=''):
+        addiction = addiction.lower()
         if addiction in valid_addictions:
             res = adic.add_addiction(ctx.author.id,addiction)
             if res:
@@ -63,11 +55,9 @@ class addictions(commands.Cog):
                 await ctx.send(f'{ctx.author.mention}, you are already keeping track of {addiction} addiction!')
         elif not len(addiction):
             #react to add_addiction specific addiction
-            embed = None
-            if len(embed_addic):
-                embed = embed_addic
-            else:
-                embed = await ctx.invoke(ctx.bot.get_command('list_all_addictions'), only_list=True)
+            embed = discord.Embed()
+            addicitons_embeded = self.embed_all_addiction(embed)
+            #embed_emoji
             await ctx.send(embed=embed)
         else:
             await ctx.send(f'{ctx.author.mention}, could not find {addiction} addiction!')
@@ -78,8 +68,9 @@ class addictions(commands.Cog):
     @commands.command(aliases=['ra','removea','removeaddiction'])
     @is_user
     async def remove_addiction(self,ctx,addiction =''):
+        addiction = addiction.lower()
         if addiction in valid_addictions:
-            res = adic.remove_addiction(ctx.author.id,addiction)
+            res = adic.update_addiction(ctx.author.id,addiction,action='remove')
             #res is [d,h,m,s]
             if not res:
                 await ctx.send(f'{ctx.author.mention}, {addiction} is not being keep track of yet!')
@@ -93,6 +84,7 @@ class addictions(commands.Cog):
             #react to remove_addiction specific addiction
             embed = discord.Embed()
             embed.title = "ALL OF THEM remove"
+            #embed_emoji
             await ctx.send(embed=embed)
         else:
             await ctx.send(f'{ctx.author.mention}, could not find {addiction} addiction!')
@@ -104,6 +96,17 @@ class addictions(commands.Cog):
     async def reset_addictions(self,ctx, addiction =""):
         pass
 
+
+    def embed_all_addiction(self,embed):
+        for i in valid_addictions:
+            addiction = i
+            number_of_users_addicted = adic.count_users_addicted(addiction)
+            format_addiction = addiction[0].upper()+addiction[1:]
+            embed.add_field(name = format_addiction, value = f'{number_of_users_addicted} people', inline=True)
+        return embed
+
+    def embed_emoji_to_addiction(self,embed):
+        pass
 
 def setup(bot):
     bot.add_cog(addictions(bot))
