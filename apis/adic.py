@@ -13,7 +13,7 @@ class addictions:
 
         query = f'''
                     SELECT COUNT({addiction}) FROM user_addictions
-                        WHERE {addiction} IS NOT NULL;
+                        WHERE {addiction} <> 'NULL';
                 '''
         res = methods.basic_fetch(query,'one')[0]
         return res
@@ -85,7 +85,7 @@ class addictions:
         addiction_start_times = methods.basic_fetch(query,'one')
         addiction_and_delta_times = []
         for time in zip(valid_addictions,addiction_start_times):
-            if time[1] is not None:
+            if time[1] != 'NULL':
                 deltatime = self.time_diff_results(user_id,time[1])
                 addiction_and_delta_times.append([time[0],self.convert_dt_to_list(deltatime)])
         return addiction_and_delta_times
