@@ -14,7 +14,7 @@ class addictions:
 
         query = f'''
                     SELECT COUNT({addiction}) FROM user_addictions
-                        WHERE {addiction} <> 'None';
+                        WHERE {addiction} <> 'None' AND {addiction} IS NOT NULL;
                 '''
         res = methods.basic_fetch(query,'one')
         return res
@@ -90,7 +90,7 @@ class addictions:
         addiction_and_delta_times = []
         for time in zip(valid_addictions,addiction_start_times):
             if str(time[1]) != 'None':
-                deltatime = self.time_diff_results(user_id,time[1])
+                deltatime = self.time_diff_results(time[1])
                 addiction_and_delta_times.append([time[0],self.convert_dt_to_list(deltatime)])
         return addiction_and_delta_times
 
@@ -143,15 +143,16 @@ class addictions:
         return diff
 
 ##
-    def leader_boards(self,ctx,addiction):
+    def leader_boards(self,addiction):
         '''
             fetches leaders in an addiction
         '''
 
         query =f'''
                 SELECT id,{addiction} FROM user_addictions
-                    ORDER BY {addiction} ASC
-                        LIMIT 10
+                    WHERE {addiction} <> 'None' AND {addiction} IS NOT NULL
+                        ORDER BY {addiction} ASC
+                            LIMIT 10
                 '''
         a = methods.basic_fetch(query,'all')
         # leaders = []
@@ -190,12 +191,12 @@ class addictions:
         start = self.fetch_addiction(user_id,addiction) 
         if str(start) == 'None':
             return False
-        deltatime = self.time_diff_results(user_id, start)
+        deltatime = self.time_diff_results(start)
         return deltatime
 
 
 
-    def time_diff_results(self,user_id,start):
+    def time_diff_results(self,start):
         '''
             takes in str_time and converts to datetime
             returns deltatime 'x days, h:m:s.f'

@@ -17,9 +17,25 @@ class addictions(commands.Cog):
         '''
             fetch top 15 users who have been sober from <addiction> for longest time
         '''
-        res = adic.leader_boards(ctx,addiction)
+        res = adic.leader_boards(addiction)
+        embed = discord.Embed()
+        embed.title = f'Leaderboard for {addiction} addiction'
+        value = ''
+        if not len(res):
+            await ctx.send(f'{ctx.author.mention}, there is currenly no one on the leader boards for {addiction}!')
+        
+        else:
+            for i in range(len(res)):
+                id = res[i][0]
+                user = await ctx.bot.fetch_user(id)
+                time = adic.time_diff_results(res[i][1])
+                time = adic.convert_dt_to_list(time)
+                print(time)
+                value += f'**{i+1}.** **{user.name + " #" + user.discriminator}** ------ Day **{time[0]}** : Hour **{time[1]}** : Minute **{time[2]}** : Second **{time[3]}** \n'
+                print(value)
+            embed.add_field(name = '\u200b',value = value)
 
-        await ctx.send(res)
+            await ctx.send(embed=embed)
 
     
 
