@@ -11,7 +11,7 @@ from custom.refers import valid_addictions, time_names
 
 class addictions(commands.Cog):
 
-    @commands.command(aliases=['addictions','a'])
+    @commands.command(aliases=['all'])
     async def list_all_addictions(self,ctx):
         '''
             list all addictions and current number 
@@ -26,7 +26,7 @@ class addictions(commands.Cog):
 
 
 
-    @commands.command(aliases=['lista','la','laddictions','listaddictions'])
+    @commands.command(aliases=['list'])
     @is_user
     async def list_user_addictions(self,ctx):
         res = adic.fetch_user_addictions(ctx.author.id)
@@ -43,7 +43,7 @@ class addictions(commands.Cog):
 
 
 
-    @commands.command(aliases=['aa','addaddiction','adda'])
+    @commands.command(aliases=['add'])
     @is_user
     async def add_addictions(self,ctx,addiction=''):
         addiction = addiction.lower()
@@ -65,10 +65,10 @@ class addictions(commands.Cog):
 
 
 
-    @commands.command(aliases=['ra','removea','removeaddiction'])
+    @commands.command(aliases=['remove'])
     @is_user
     async def remove_addiction(self,ctx,addiction =''):
-        await self.update_addiction(ctx,addiction,'remove')
+        await self.update_addiction(ctx,addiction,'removed')
 
 
 
@@ -78,20 +78,28 @@ class addictions(commands.Cog):
         await self.update_addiction(ctx,addiction,'reset')
 
 
+    @commands.command()
+    async def test(self,ctx):
+        a = adic.unnest_records()
+        await ctx.send(a)
 
     async def update_addiction(self,ctx,addiction,action):
 
         addiction = addiction.lower()
         if addiction in valid_addictions:
-            res = adic.update_addiction(ctx.author.id,addiction,action=action)
+            res,record = adic.update_addiction(ctx.author.id,addiction,action=action)
+            personal_best = adic.personal_best(ctx.author.id,addiction,record)
             #res is [d,h,m,s]
             if not res:
                 await ctx.send(f'{ctx.author.mention}, {addiction} is not being keep track of yet!')
             else:
                 embed = discord.Embed()
-                embed.title = f'Results for {addiction} addiction - {action}'
+                if personal_best:
+                    embed.title = f'Results for {addiction} addiction - Personal Best!'
+                else:
+                    embed.title = f'Results for {addiction} addiction'
                 embed_time(embed,res)
-                await ctx.send(f'{ctx.author.mention}, your {addiction} addiction has been {action}')
+                await ctx.send(f'{ctx.author.mention}, your {addiction} addiction has been {action}!')
                 await ctx.send(embed = embed)
         elif not len(addiction):
             #react to update_addiction a specific addiction

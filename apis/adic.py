@@ -74,7 +74,7 @@ class addictions:
             fetches user's current addictions
             returns [ [addiction1, [d,h,m,s]], [addiction2, [d,h,m,s]].. ]
         '''
-
+##optimize query
         valid = ''
         for i in valid_addictions:
             valid +=f'{i}, '
@@ -127,25 +127,35 @@ class addictions:
             pass
         elif action == 'reset':
             addiction_time_now = str(dt.datetime.now())
-        print(type(addiction_time_now))
         query = f'''
                     UPDATE user_addictions 
                         SET {'s'+addiction} = array_append({'s'+addiction},{rep_time}), {addiction} = '{addiction_time_now}'
                                 WHERE id = {user_id};
                 '''
         methods.basic_commit(query)
-        return dt_in_list
+        return (dt_in_list,rep_time)
 
 
 
+    def personal_best(self,user_id,addiction,record):
+        query = f'''
+                    WITH records as(
+                        SELECT unnest({'s'+addiction}) AS {'s'+addiction} FROM user_addictions
+                    )
+                    SELECT max({'s'+addiction}) FROM records;
+                '''
+        a = methods.basic_fetch(query,'one')
+        #a = type decimal.decimal
+        if record == float(a[0]):
+            return True
+        return False
+        
     def addiction_time_results(self,user_id,addiction=False):
         '''
             returns time results after user resets or removes addiction
         '''
         
         start = self.fetch_addiction(user_id,addiction) 
-        print(start)
-        print(type(start))
         if str(start) == 'None':
             return False
         deltatime = self.time_diff_results(user_id, start)
