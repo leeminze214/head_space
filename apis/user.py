@@ -40,7 +40,7 @@ class user_data:
                     SELECT EXISTS(SELECT 1 FROM user_info 
                         WHERE id = {user_id}) 
                 '''
-        res = methods.basic_fetch(query,'one')[0]
+        res = methods.basic_fetch(query,'one')
         return res
 
 

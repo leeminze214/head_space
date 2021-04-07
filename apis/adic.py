@@ -9,13 +9,14 @@ class addictions:
         '''
             fetches number of users with
              <addiction> addiction
+             returns fetched results
         '''
 
         query = f'''
                     SELECT COUNT({addiction}) FROM user_addictions
                         WHERE {addiction} <> 'None';
                 '''
-        res = methods.basic_fetch(query,'one')[0]
+        res = methods.basic_fetch(query,'one')
         return res
     
 
@@ -24,6 +25,7 @@ class addictions:
         '''
             inserts addiction into user 
             account to keep track of
+            returns boolean 
         '''
 
         time_now = dt.datetime.now()
@@ -51,7 +53,7 @@ class addictions:
                     SELECT {addiction} FROM user_addictions
                         WHERE id = {user_id};
                 '''
-        res = methods.basic_fetch(query, 'one')[0]
+        res = methods.basic_fetch(query, 'one')
         return res
 
 
@@ -74,7 +76,7 @@ class addictions:
             fetches user's current addictions
             returns [ [addiction1, [d,h,m,s]], [addiction2, [d,h,m,s]].. ]
         '''
-##optimize query
+        #optimize query
         valid = ''
         for i in valid_addictions:
             valid +=f'{i}, '
@@ -82,7 +84,9 @@ class addictions:
                     SELECT {valid[:-2]} FROM user_addictions
                         WHERE id = {user_id};
                 '''
-        addiction_start_times = methods.basic_fetch(query,'one')
+        
+        addiction_start_times = methods.basic_fetch(query,'all')
+        addiction_start_times = addiction_start_times[0]
         addiction_and_delta_times = []
         for time in zip(valid_addictions,addiction_start_times):
             if str(time[1]) != 'None':
@@ -114,14 +118,17 @@ class addictions:
 
 ##
     def update_addiction(self,user_id,addiction,action = ''):
+        '''
+            removes or resets addiction
+            updates database and appends new run
+            returns runtime in list [d,h,m,s] and runtime in seconds (float)
+        '''
 
         diff = self.addiction_time_results(user_id,addiction=addiction)
         if not diff:
             return False
         
         #diff format: x days, h:m:s.f
-        rep_time = diff.total_seconds()
-        dt_in_list = self.convert_dt_to_list(diff)
         addiction_time_now = None
         if action == 'remove':
             pass
@@ -129,15 +136,37 @@ class addictions:
             addiction_time_now = str(dt.datetime.now())
         query = f'''
                     UPDATE user_addictions 
-                        SET {'s'+addiction} = array_append({'s'+addiction},{rep_time}), {addiction} = '{addiction_time_now}'
+                        SET {'s'+addiction} = array_append({'s'+addiction},'{str(diff)}'), {addiction} = '{addiction_time_now}'
                                 WHERE id = {user_id};
                 '''
         methods.basic_commit(query)
-        return (dt_in_list,rep_time)
+        return diff
 
+##
+    def leader_boards(self,ctx,addiction):
+        '''
+            fetches leaders in an addiction
+        '''
 
+        query =f'''
+                SELECT id,{addiction} FROM user_addictions
+                    ORDER BY {addiction} ASC
+                        LIMIT 10
+                '''
+        a = methods.basic_fetch(query,'all')
+        # leaders = []
+        # for i in a:
+        #     user = ctx.bot.get_user(i[0])
+
+        #     leaders.append()
+        return a
 
     def personal_best(self,user_id,addiction,record):
+        '''
+            checks whether record is a personal best
+            returns boolean
+        '''
+
         query = f'''
                     WITH records as(
                         SELECT unnest({'s'+addiction}) AS {'s'+addiction} FROM user_addictions
@@ -145,14 +174,17 @@ class addictions:
                     SELECT max({'s'+addiction}) FROM records;
                 '''
         a = methods.basic_fetch(query,'one')
-        #a = type decimal.decimal
-        if record == float(a[0]):
+        #record is dt.timedelta type
+        if str(record) == a:
             return True
         return False
         
+
+
     def addiction_time_results(self,user_id,addiction=False):
         '''
-            returns time results after user resets or removes addiction
+            calculates deltatime after user resets or removes addiction
+            returns deltatime 'x days, h:m:s.f'
         '''
         
         start = self.fetch_addiction(user_id,addiction) 
@@ -176,6 +208,6 @@ class addictions:
 
 
 
-
+    
 
 adic = addictions()

@@ -11,20 +11,34 @@ from custom.refers import valid_addictions, time_names
 
 class addictions(commands.Cog):
 
+
+    @commands.command(aliases=['leaders','leaderboard','leader','leaderboards'])
+    async def leader_boards(self,ctx,addiction):
+        '''
+            fetch top 15 users who have been sober from <addiction> for longest time
+        '''
+        res = adic.leader_boards(ctx,addiction)
+
+        await ctx.send(res)
+
+    
+
     @commands.command(aliases=['all'])
-    async def list_all_addictions(self,ctx):
-        '''
-            list all addictions and current number 
-            of users that have each addiction
-            returns as embed
-        '''
-        
+    async def list_all_addictions(self,ctx):       
         embed = discord.Embed()
         embed.title = "Addictions"  
         addictions_embeded = self.embed_all_addiction(embed)
         await ctx.send(embed = addictions_embeded)
 
 
+    @commands.command(aliases=['pr','record','records'])
+    @is_user
+    async def personal_records(self,ctx,addiction=''):
+        '''
+            fetch top 5 records
+            if no addiction given, getch top record from each addiction
+        '''
+        pass
 
     @commands.command(aliases=['list'])
     @is_user
@@ -80,25 +94,28 @@ class addictions(commands.Cog):
 
     @commands.command()
     async def test(self,ctx):
-        a = adic.unnest_records()
+        a = adic.leader_boards('gaming')
         await ctx.send(a)
 
-    async def update_addiction(self,ctx,addiction,action):
+    
 
+    async def update_addiction(self,ctx,addiction,action):
         addiction = addiction.lower()
         if addiction in valid_addictions:
-            res,record = adic.update_addiction(ctx.author.id,addiction,action=action)
-            personal_best = adic.personal_best(ctx.author.id,addiction,record)
-            #res is [d,h,m,s]
+            res = adic.update_addiction(ctx.author.id,addiction,action=action)
+            
+            #res is dt.timedelta object xdays,h:m:s:f
             if not res:
                 await ctx.send(f'{ctx.author.mention}, {addiction} is not being keep track of yet!')
             else:
+                data = adic.convert_dt_to_list(res)
+                personal_best = adic.personal_best(ctx.author.id,addiction,res)
                 embed = discord.Embed()
                 if personal_best:
                     embed.title = f'Results for {addiction} addiction - Personal Best!'
                 else:
                     embed.title = f'Results for {addiction} addiction'
-                embed_time(embed,res)
+                embed_time(embed,data)
                 await ctx.send(f'{ctx.author.mention}, your {addiction} addiction has been {action}!')
                 await ctx.send(embed = embed)
         elif not len(addiction):

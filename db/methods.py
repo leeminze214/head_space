@@ -1,5 +1,6 @@
 import psycopg2
 import json
+import psycopg2.extras
 
 def config():
     with open('db/db_auth.json', 'r') as config:
@@ -31,16 +32,17 @@ class db_methods:
 
     def basic_fetch(self,query, fetchtype = '', size = None):
         self.connect()
-        cur = self.conn.cursor()
+        cur = self.conn.cursor()#cursor_factory=psycopg2.extras.DictCursor)
         cur.execute(query)
         res = None
         if fetchtype == 'all':
-            res = cur.fetchall()
+            res = list(cur.fetchall())
         elif fetchtype == 'many':
             res = cur.fetchmany(size)
         else:
-            res = cur.fetchone()
+            res = cur.fetchone()[0]
         cur.close()
+        print(res,type(res))
         return res
             
 
